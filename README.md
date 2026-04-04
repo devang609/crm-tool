@@ -1,3 +1,8 @@
+# ADMIN CREDENTIALS
+- Email: admin@example.com
+- Password: pass@123
+
+
 # CRM Application
 
 A fully functional Customer Relationship Management (CRM) tool built with Next.js 14, Supabase, and Tailwind CSS. Supports role-based access (Admin, Employee, Client) with complete CRUD operations.
