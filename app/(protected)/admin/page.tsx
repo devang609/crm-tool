@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { Profile } from '@/lib/types'
 import Navbar from '@/components/Navbar'
+import { BriefingButton } from '@/components/BriefingButton'
 import Link from 'next/link'
 
 export default function AdminDashboard() {
@@ -112,7 +113,10 @@ export default function AdminDashboard() {
     <>
       <Navbar user={user} />
       <div className="container">
-        <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+          <BriefingButton />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="card">

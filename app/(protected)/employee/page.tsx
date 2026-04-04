@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { Profile, Customer } from '@/lib/types'
 import Navbar from '@/components/Navbar'
+import { BriefingButton } from '@/components/BriefingButton'
 import { StatusBadge } from '@/components/Badges'
 import { Table, TableColumn } from '@/components/Table'
 import Link from 'next/link'
@@ -64,7 +65,10 @@ export default function EmployeePage() {
     <>
       <Navbar user={user} />
       <div className="container">
-        <h1 className="text-3xl font-bold mb-8">My Customers</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">My Customers</h1>
+          <BriefingButton />
+        </div>
         <Table columns={columns} data={customers} />
       </div>
     </>
