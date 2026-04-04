@@ -9,12 +9,14 @@ export function CustomerForm({
   onSubmit,
   onCancel,
   loading = false,
+  isEmployee = false,
 }: {
   initialData?: Customer
   employees: Array<{ id: string; full_name: string }>
   onSubmit: (data: Partial<Customer>) => Promise<void>
   onCancel: () => void
   loading?: boolean
+  isEmployee?: boolean
 }) {
   const [formData, setFormData] = useState<Partial<Customer>>(
     initialData || {
@@ -103,21 +105,23 @@ export function CustomerForm({
         </select>
       </div>
 
-      <div>
-        <label className="label">Assign To</label>
-        <select
-          className="input"
-          value={formData.assigned_to || ''}
-          onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-        >
-          <option value="">None</option>
-          {employees.map((emp) => (
-            <option key={emp.id} value={emp.id}>
-              {emp.full_name}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!isEmployee && (
+        <div>
+          <label className="label">Assign To</label>
+          <select
+            className="input"
+            value={formData.assigned_to || ''}
+            onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
+          >
+            <option value="">None</option>
+            {employees.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.full_name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div>
         <label className="label">Notes</label>

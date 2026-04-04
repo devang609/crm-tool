@@ -106,7 +106,10 @@ export async function PUT(
     if (company !== undefined) updateData.company = company
     if (status !== undefined) updateData.status = status
     if (notes !== undefined) updateData.notes = notes
-    if (assigned_to !== undefined) updateData.assigned_to = assigned_to
+    // Only allow ADMIN to change assigned_to
+    if (assigned_to !== undefined && profile.role === 'ADMIN') {
+      updateData.assigned_to = assigned_to
+    }
     updateData.updated_at = new Date().toISOString()
 
     const { data: updatedCustomer, error } = await supabase

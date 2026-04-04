@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase/client'
 import { Profile, Customer, Interaction } from '@/lib/types'
 import Navbar from '@/components/Navbar'
 import { InteractionForm } from '@/components/InteractionForm'
+import { CustomerForm } from '@/components/CustomerForm'
 import { Modal } from '@/components/Modal'
 import { useRouter } from 'next/navigation'
 
@@ -19,6 +20,9 @@ export default function CustomerDetailPage({
   const [interactions, setInteractions] = useState<Interaction[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [editMode, setEditMode] = useState(false)
+  const [employees, setEmployees] = useState<Array<{ id: string; full_name: string }>>([])
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -48,6 +52,13 @@ export default function CustomerDetailPage({
           .eq('customer_id', params.id)
           .order('created_at', { ascending: false })
         setInteractions(ints || [])
+
+        // Fetch employees for assignment dropdown
+        const { data: emps } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .eq('role', 'EMPLOYEE')
+        setEmployees(emps || [])
       }
     } catch (error) {
       console.error('Error:', error)
@@ -73,8 +84,52 @@ export default function CustomerDetailPage({
     }
   }
 
+  const handleEditCustomer = async (data: Partial<Customer>) => {
+    try {
+      setSaving(true)
+      const response = await fetch(`/api/customers/${params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) throw new Error('Failed to update customer')
+
+      setEditMode(false)
+      fetchData()
+    } catch (error) {
+      throw error
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) return <><Navbar user={user} /><div className="container py-8">Loading...</div></>
   if (!customer) return <><Navbar user={user} /><div className="container py-8">Customer not found</div></>
+
+  if (editMode) {
+    return (
+      <>
+        <Navbar user={user} />
+        <div className="container">
+          <button onClick={() => router.back()} className="mb-4 text-blue-600">
+            ← Back
+          </button>
+          <div className="card max-w-2xl">
+            <h1 className="text-3xl font-bold mb-6">Edit Customer</h1>
+            <CustomerForm
+              initialData={customer}
+              employees={employees}
+              onSubmit={handleEditCustomer}
+              onCancel={() => setEditMode(false)}
+              loading={saving}
+              isEmployee={user?.role === 'EMPLOYEE'}
+            />
+          </div>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
@@ -86,7 +141,15 @@ export default function CustomerDetailPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="card">
-            <h1 className="text-3xl font-bold mb-6">{customer.full_name}</h1>
+            <div className="flex justify-between items-start mb-6">
+              <h1 className="text-3xl font-bold">{customer.full_name}</h1>
+              <button
+                onClick={() => setEditMode(true)}
+                className="btn btn-primary text-sm"
+              >
+                Edit
+              </button>
+            </div>
             <div className="space-y-4">
               {customer.email && (
                 <div>
