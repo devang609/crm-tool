@@ -24,7 +24,7 @@ export function CustomerForm({
       email: '',
       phone: '',
       company: '',
-      status: 'lead',
+      status: 'LEAD',
       notes: '',
       assigned_to: '',
     }
@@ -96,13 +96,16 @@ export function CustomerForm({
         <label className="label">Status</label>
         <select
           className="input"
-          value={formData.status || 'lead'}
+          value={formData.status || 'LEAD'}
           onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+          disabled={isEmployee}
         >
-          <option value="lead">Lead</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="LEAD">Lead (Fresh)</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="CONVERTED">Converted</option>
+          <option value="INACTIVE">Inactive</option>
         </select>
+        {isEmployee && <p className="text-sm text-gray-500 mt-1">Status can be changed from the customer detail page</p>}
       </div>
 
       {!isEmployee && (

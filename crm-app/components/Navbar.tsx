@@ -21,7 +21,39 @@ export default function Navbar({ user }: { user: Profile | null }) {
         </Link>
 
         {user && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            {/* Navigation Links */}
+            <div className="flex gap-4">
+              {user.role === 'ADMIN' && (
+                <>
+                  <Link href="/admin" className="text-gray-700 hover:text-blue-600">
+                    Dashboard
+                  </Link>
+                  <Link href="/admin/users" className="text-gray-700 hover:text-blue-600">
+                    Users
+                  </Link>
+                  <Link href="/admin/customers" className="text-gray-700 hover:text-blue-600">
+                    Customers
+                  </Link>
+                </>
+              )}
+              {(user.role === 'EMPLOYEE' || user.role === 'ADMIN') && (
+                <>
+                  <Link href="/employee" className="text-gray-700 hover:text-blue-600">
+                    My Customers
+                  </Link>
+                  <Link href="/calendar" className="text-gray-700 hover:text-blue-600">
+                    Calendar
+                  </Link>
+                </>
+              )}
+              {user.role === 'CLIENT' && (
+                <Link href="/client" className="text-gray-700 hover:text-blue-600">
+                  My Profile
+                </Link>
+              )}
+            </div>
+
             <div className="text-right">
               <p className="font-medium">{user.full_name}</p>
               <p className="text-sm text-gray-600">

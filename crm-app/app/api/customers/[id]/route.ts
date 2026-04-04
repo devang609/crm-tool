@@ -100,16 +100,44 @@ export async function PUT(
       await request.json()
 
     const updateData: any = {}
-    if (full_name) updateData.full_name = full_name
-    if (email !== undefined) updateData.email = email
-    if (phone !== undefined) updateData.phone = phone
-    if (company !== undefined) updateData.company = company
-    if (status !== undefined) updateData.status = status
-    if (notes !== undefined) updateData.notes = notes
-    // Only allow ADMIN to change assigned_to
-    if (assigned_to !== undefined && profile.role === 'ADMIN') {
-      updateData.assigned_to = assigned_to
+
+    // Get current customer to check permissions
+    const { data: currentCustomer } = await supabase
+      .from('customers')
+      .select('assigned_to')
+      .eq('id', params.id)
+      .single()
+
+    if (!currentCustomer) {
+      return NextResponse.json(
+        { success: false, error: 'Customer not found' },
+        { status: 404 }
+      )
     }
+
+    // For EMPLOYEE: only allow status changes if assigned to this customer
+    if (profile.role === 'EMPLOYEE') {
+      if (currentCustomer.assigned_to !== session.user.id) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden' },
+          { status: 403 }
+        )
+      }
+      // Employee can only change status, no other fields
+      if (status !== undefined) {
+        updateData.status = status
+      }
+    } else if (profile.role === 'ADMIN') {
+      // Admin can change anything except assigned_to restrictions
+      if (full_name) updateData.full_name = full_name
+      if (email !== undefined) updateData.email = email
+      if (phone !== undefined) updateData.phone = phone
+      if (company !== undefined) updateData.company = company
+      if (status !== undefined) updateData.status = status
+      if (notes !== undefined) updateData.notes = notes
+      if (assigned_to !== undefined) updateData.assigned_to = assigned_to
+    }
+
     updateData.updated_at = new Date().toISOString()
 
     const { data: updatedCustomer, error } = await supabase

@@ -71,10 +71,10 @@ export default function AdminDashboard() {
           .from('customers')
           .select('*', { count: 'exact', head: true })
 
-        const { count: activeCount } = await supabase
+        const { count: convertedCount } = await supabase
           .from('customers')
           .select('*', { count: 'exact', head: true })
-          .eq('status', 'active')
+          .eq('status', 'CONVERTED')
 
         const { count: employeesCount } = await supabase
           .from('profiles')
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
           totalCustomers: customersCount || 0,
           totalEmployees: employeesCount || 0,
           totalClients: clientsCount || 0,
-          activeCustomers: activeCount || 0,
+          activeCustomers: convertedCount || 0,
         })
       } catch (err) {
         console.error('Error fetching data:', err)

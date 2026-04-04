@@ -6,6 +6,7 @@ import { Profile, Customer, Interaction } from '@/lib/types'
 import Navbar from '@/components/Navbar'
 import { InteractionForm } from '@/components/InteractionForm'
 import { CustomerForm } from '@/components/CustomerForm'
+import { StatusSelector } from '@/components/StatusSelector'
 import { Modal } from '@/components/Modal'
 import { useRouter } from 'next/navigation'
 
@@ -104,6 +105,25 @@ export default function CustomerDetailPage({
     }
   }
 
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      setSaving(true)
+      const response = await fetch(`/api/customers/${params.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (!response.ok) throw new Error('Failed to update status')
+
+      fetchData()
+    } catch (error) {
+      throw error
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) return <><Navbar user={user} /><div className="container py-8">Loading...</div></>
   if (!customer) return <><Navbar user={user} /><div className="container py-8">Customer not found</div></>
 
@@ -150,7 +170,7 @@ export default function CustomerDetailPage({
                 Edit
               </button>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {customer.email && (
                 <div>
                   <p className="text-gray-600 text-sm">Email</p>
@@ -169,9 +189,13 @@ export default function CustomerDetailPage({
                   <p className="text-lg">{customer.company}</p>
                 </div>
               )}
-              <div>
-                <p className="text-gray-600 text-sm">Status</p>
-                <p className="text-lg font-medium capitalize">{customer.status}</p>
+              <div className="border-t pt-4">
+                <StatusSelector
+                  customer={customer}
+                  onStatusChange={handleStatusChange}
+                  loading={saving}
+                  isAssigned={customer.assigned_to === user?.id}
+                />
               </div>
               {customer.notes && (
                 <div>
