@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
-import { Profile, Customer } from '@/lib/types'
+import { Profile } from '@/lib/types'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 

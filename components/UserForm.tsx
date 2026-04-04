@@ -16,7 +16,7 @@ export function UserForm({
   loading?: boolean
   isCreating?: boolean
 }) {
-  const [formData, setFormData] = useState(
+  const [formData, setFormData] = useState<any>(
     initialData || {
       full_name: '',
       email: '',
